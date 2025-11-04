@@ -7,8 +7,8 @@ import os
 
 from flask import Response, current_app, request
 
-from FlaskBlueprintTemplateApp.blueprints.api.api_1_0 import api
-from FlaskBlueprintTemplateApp.utils import sqlalchemy_utils, utils
+from Flask_API.blueprints.api.api_1_0 import api
+from Flask_API.utils import sqlalchemy_utils, utils
 
 
 @api.route('/', methods=["GET"])

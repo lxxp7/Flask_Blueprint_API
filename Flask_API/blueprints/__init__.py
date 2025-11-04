@@ -8,7 +8,7 @@ Doc : https://flask.palletsprojects.com/en/1.1.x/blueprints/
 The register_blueprints() is called by the create_app() after Flask got configured.
 """
 #: Import blueprints from submodule
-from FlaskBlueprintTemplateApp.blueprints.api.api_1_0 import api as api_1_0_blueprint
+from Flask_API.blueprints.api.api_1_0 import api as api_1_0_blueprint
 
 
 def register_blueprints(app):

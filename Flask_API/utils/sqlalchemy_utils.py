@@ -3,8 +3,8 @@ from typing import Any, Dict, Optional, Type, TypeVar
 
 from sqlalchemy.inspection import inspect
 
-from FlaskBlueprintTemplateApp import utils
-from FlaskBlueprintTemplateApp.db import db
+from Flask_API import utils
+from Flask_API.db import db
 
 T = TypeVar('T')
 

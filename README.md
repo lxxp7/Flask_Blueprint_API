@@ -1,4 +1,4 @@
-# FlaskBlueprintTemplateApp Back
+# Flask_API Back
 
 A Flask REST API template for building modular applications using blueprints.
 
@@ -19,7 +19,7 @@ git clone <REPO>
 ### 2. Create a virtual environment to install project dependencies
 
 ```bash
-cd path/to/FlaskBlueprintTemplateApp
+cd path/to/Flask_API
 python -m venv .venv
 ```
 
@@ -42,7 +42,7 @@ pip install -r requirements.txt
 To run the app in production:
 
 1. Set `SQLALCHEMY_DATABASE_URI`, `FLASK_HOST` and `FLASK_PORT` inside `config/settings.py`
-2. Configure the app to use production settings in `FlaskBlueprintTemplateApp/app.py`:
+2. Configure the app to use production settings in `Flask_API/app.py`:
 
 ```python
 app = create_app('config/settings.py')

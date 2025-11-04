@@ -2,7 +2,7 @@ from flasgger import Swagger
 from flask_cors import CORS
 from waitress import serve
 
-from FlaskBlueprintTemplateApp import create_app
+from Flask_API import create_app
 
 # Create the Flask app instance
 # If you want to use another configuration than the default `settings-dev.py`,

@@ -6,7 +6,7 @@ It contains SQLAlchemy models representing database tables.
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
 from sqlalchemy.orm import backref, relationship
 
-from FlaskBlueprintTemplateApp import db
+from Flask_API import db
 
 
 class Table(db.Model):

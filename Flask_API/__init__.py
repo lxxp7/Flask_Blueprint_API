@@ -1,7 +1,7 @@
 """
-FlaskBlueprintTemplateApp - Main Application.
+Flask_API - Main Application.
 
-FlaskBlueprintTemplateApp is a boilerplate/template for Flask REST API applications.
+Flask_API is a boilerplate/template for Flask REST API applications.
 This application is built with Flask and follows a modular architecture using Blueprints, ensuring scalability and maintainability.
 
 This file contains functions to initialize Flask and Database.
@@ -13,8 +13,8 @@ import logging
 from flask import Flask
 from flask_apscheduler import APScheduler
 
-from FlaskBlueprintTemplateApp.blueprints import register_blueprints
-from FlaskBlueprintTemplateApp.db import db
+from Flask_API.blueprints import register_blueprints
+from Flask_API.db import db
 
 
 def create_app(config_filename: str = None) -> Flask:
@@ -44,13 +44,13 @@ def create_app(config_filename: str = None) -> Flask:
     if config_filename:
         app.config.from_pyfile(config_filename)
     else:
-       app.config.from_object('FlaskBlueprintTemplateApp.config.settings-dev')
+       app.config.from_object('Flask_API.config.settings-dev')
 
     #: Init the project database
     db.init_app(app)
 
     #: Import models module to create the tables in the database if the database.db file doesn't exist
-    import FlaskBlueprintTemplateApp.models  # noqa
+    import Flask_API.models  # noqa
     with app.app_context():
         db.create_all()  # Make sure this call is done when in app_context
         scheduler = APScheduler()
