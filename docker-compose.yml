@@ -1,0 +1,37 @@
+version: "3.8"
+
+services:
+  api:
+    build: .
+    container_name: flask_api
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./logs:/app/logs
+    environment:
+      - FLASK_HOST=0.0.0.0
+      - FLASK_PORT=5000
+      - SQLALCHEMY_DATABASE_URI=postgresql://FlaskAPI:FlaskAPI@db:5432/database.db
+      - LOG_FILE=/app/logs/FlaskAPI.log
+      - ERRORS_LOG_FILE=/app/logs/errors.log
+      - WARNINGS_LOG_FILE=/app/logs/warnings.log
+      - INFO_LOG_FILE=/app/logs/info.log
+    depends_on:
+      - db
+    restart: unless-stopped
+
+  db:
+    image: postgres:15
+    container_name: flask_db
+    environment:
+      POSTGRES_DB: flask_db
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pwd
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  pgdata:
