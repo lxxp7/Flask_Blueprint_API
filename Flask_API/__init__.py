@@ -8,8 +8,10 @@ This file contains functions to initialize Flask and Database.
 You shouldn't have to change those functions except for advance functionality.
 
 """
+
 import logging
 
+from click import Path
 from flask import Flask
 from flask_apscheduler import APScheduler
 
@@ -44,13 +46,14 @@ def create_app(config_filename: str = None) -> Flask:
     if config_filename:
         app.config.from_pyfile(config_filename)
     else:
-       app.config.from_object('Flask_API.config.settings-dev')
+        app.config.from_object("Flask_API.config.settings-dev")
 
     #: Init the project database
     db.init_app(app)
 
     #: Import models module to create the tables in the database if the database.db file doesn't exist
     import Flask_API.models  # noqa
+
     with app.app_context():
         db.create_all()  # Make sure this call is done when in app_context
         scheduler = APScheduler()
@@ -63,8 +66,43 @@ def create_app(config_filename: str = None) -> Flask:
     #: being at blueprints/__init__.py
     register_blueprints(app)
 
-    log_file_path = app.config.get("LOG_FILE")
-    file_handler = logging.FileHandler(log_file_path)
-    app.logger.addHandler(file_handler)
+    #: Configure logging with multiple handlers
+    configure_logging(app)
+
     app.scheduler.start()
     return app
+
+
+from pathlib import Path
+import logging
+
+
+def configure_logging(app: Flask):
+    formatter = logging.Formatter(
+        "[%(asctime)s] %(levelname)s in %(module)s: %(message)s"
+    )
+
+    log_dir = Path(app.root_path) / "logs"
+    log_dir.mkdir(parents=True, exist_ok=True)
+
+    main_handler = logging.FileHandler(log_dir / "FlaskAPI.log")
+    main_handler.setLevel(logging.DEBUG)
+    main_handler.setFormatter(formatter)
+    app.logger.addHandler(main_handler)
+
+    error_handler = logging.FileHandler(log_dir / "errors.log")
+    error_handler.setLevel(logging.ERROR)
+    error_handler.setFormatter(formatter)
+    app.logger.addHandler(error_handler)
+
+    warning_handler = logging.FileHandler(log_dir / "warnings.log")
+    warning_handler.setLevel(logging.WARNING)
+    warning_handler.setFormatter(formatter)
+    app.logger.addHandler(warning_handler)
+
+    info_handler = logging.FileHandler(log_dir / "info.log")
+    info_handler.setLevel(logging.INFO)
+    info_handler.setFormatter(formatter)
+    app.logger.addHandler(info_handler)
+
+    app.logger.setLevel(logging.INFO)
