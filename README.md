@@ -86,7 +86,7 @@ All requests to the API routes will result in a response with one of the followi
 
 ```json
 {
-  "data": the_requested_data (list, dict, bool, etc.)
+  the_requested_data (list, dict, bool, etc.)
 }
 ```
 
@@ -100,6 +100,6 @@ Empty body
 
 ```json
 {
-  "error": "the error message"
+  "the error message"
 }
 ```

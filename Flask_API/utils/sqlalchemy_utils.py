@@ -1,4 +1,5 @@
 """SQLAlchemy utils module containing all functions making operations using the database."""
+
 from typing import Any, Dict, Optional, Type, TypeVar
 
 from sqlalchemy.inspection import inspect
@@ -6,7 +7,7 @@ from sqlalchemy.inspection import inspect
 from Flask_API import utils
 from Flask_API.db import db
 
-T = TypeVar('T')
+T = TypeVar("T")
 
 
 def create_record(model: Type[T], data: Dict[str, Any]) -> bool:
@@ -25,7 +26,9 @@ def create_record(model: Type[T], data: Dict[str, Any]) -> bool:
     filter_criteria = {key: data.get(key) for key in primary_keys if key in data}
 
     if not filter_criteria:
-        utils.log_warning(f"No primary key provided in data for model : {model.__tablename__} : {data}")
+        utils.log_warning(
+            f"No primary key provided in data for model : {model.__tablename__} : {data}"
+        )
         return False
 
     # Validate foreign key references
@@ -37,7 +40,9 @@ def create_record(model: Type[T], data: Dict[str, Any]) -> bool:
     # Check if the record exists based on primary keys
     existing_record = get_record_by_key(model, filter_criteria)
     if existing_record:
-        utils.log_warning(f"Record with primary key(s) {filter_criteria} already exists")
+        utils.log_warning(
+            f"Record with primary key(s) {filter_criteria} already exists"
+        )
         return False
     try:
         # Create and insert the new record
@@ -186,7 +191,9 @@ def get_model_foreign_keys(model_name: str) -> Dict[str, Dict[str, list[str]]]:
     return fks_dict
 
 
-def validate_foreign_key_references(model: Type[T], data: Dict[str, Any]) -> Dict[str, str]:
+def validate_foreign_key_references(
+    model: Type[T], data: Dict[str, Any]
+) -> Dict[str, str]:
     """
     Validate that foreign key references exist before inserting or updating a record.
 
@@ -214,9 +221,13 @@ def validate_foreign_key_references(model: Type[T], data: Dict[str, Any]) -> Dic
 
                 existing_record = get_record_by_key(model_class, {fk_column: fk_value})
                 if not existing_record:
-                    validation_errors[fk_column] = f'Could not find {fk_column} value for {fk_value} in {ref_model}'
+                    validation_errors[fk_column] = (
+                        f"Could not find {fk_column} value for {fk_value} in {ref_model}"
+                    )
     except Exception as e:
-        validation_errors["foreign_key_validation"] = f"Error validating foreign keys for model {model.__name__}: {str(e)}"
+        validation_errors["foreign_key_validation"] = (
+            f"Error validating foreign keys for model {model.__name__}: {str(e)}"
+        )
 
     return validation_errors
 
@@ -239,7 +250,7 @@ def get_class_from_tablename(tablename: str) -> Optional[Type[T]]:
         raise TypeError("Tablename must be a string")
     try:
         for model_class in db.Model.__subclasses__():
-            name = getattr(model_class, '__tablename__', '')
+            name = getattr(model_class, "__tablename__", "")
             if name.lower() == tablename.lower():
                 return model_class
     except Exception as e:
@@ -292,8 +303,26 @@ def get_table_schema(model_name):
             "name": column.name,
             "type": str(column.type),
             "primary_key": column.primary_key,
-            "foreign_keys": [str(fk.target_fullname) for fk in column.foreign_keys]
+            "foreign_keys": [str(fk.target_fullname) for fk in column.foreign_keys],
         }
         schema.append(col_info)
 
     return schema
+
+
+def get_all_models_names() -> list[str]:
+    """
+    Retrieve all model names defined in the SQLAlchemy database.
+
+    Returns:
+        list[str]: A list of model names as strings.
+    """
+    model_names = []
+    try:
+        for model_class in db.Model.__subclasses__():
+            name = getattr(model_class, "__tablename__", None)
+            if name:
+                model_names.append(name)
+    except Exception as e:
+        utils.log_error(f"Failed to retrieve model names: {str(e)}")
+    return model_names

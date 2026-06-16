@@ -3,6 +3,7 @@ API 1.0 - base.
 
 This is a the file that will contain all of our routes for our api blueprint.
 """
+
 import os
 
 from flask import Response, current_app, request
@@ -11,7 +12,7 @@ from Flask_API.blueprints.api.api_1_0 import api
 from Flask_API.utils import sqlalchemy_utils, utils
 
 
-@api.route('/', methods=["GET"])
+@api.route("/", methods=["GET"])
 def routes_list() -> Response:
     """
     Return the main page of the API with available routes.
@@ -45,14 +46,15 @@ def routes_list() -> Response:
         Response: A response that contains available routes as a dict.
     """
     routes = [
-        rule.rule for rule in current_app.url_map.iter_rules()
-        if not rule.rule.startswith('/static')
+        rule.rule
+        for rule in current_app.url_map.iter_rules()
+        if not rule.rule.startswith("/static")
     ]
 
     return utils.return_response(routes)
 
 
-@api.route('/logs')
+@api.route("/logs")
 def get_logs():
     """
     Return the last 'limit' lines from the logfile.
@@ -100,15 +102,15 @@ def get_logs():
     Returns:
         list[str]: a list that contains the last 'limit' lines
     """
-    limit = int(request.args.get('limit', 100))
-    log_file = current_app.config.get('LOG_FILE')
+    limit = int(request.args.get("limit", 100))
+    log_file = current_app.config.get("LOG_FILE")
 
     if not os.path.exists(log_file):
         return []
 
     logs = []
     try:
-        with open(log_file, 'r') as f:
+        with open(log_file, "r") as f:
             for line in f.readlines():
                 logs.append(line.strip())
     except (IOError, PermissionError) as e:
@@ -118,9 +120,10 @@ def get_logs():
     # Return the last 'limit' logs
     return utils.return_response(logs[-limit:])
 
-@api.route('/logs/clear')
+
+@api.route("/logs/clear")
 def clear_logs():
-  """
+    """
     Clear the logs file.
     ---
     tags:
@@ -142,23 +145,23 @@ def clear_logs():
             error:
               type: string
               example: "Error clearing log file: error message"
-  """
-  """
+    """
+    """
   Clears the logs file.
 
   Returns:
       Response: A response indicating the result of the operation.
   """
-  log_file = current_app.config.get('LOG_FILE')
-  try:
-      open(log_file, 'w').close()
-      return utils.return_response("Log file cleared successfully.")
-  except Exception as e:
-      return utils.return_error(f"Error clearing log file: {e}", 500)
+    log_file = current_app.config.get("LOG_FILE")
+    try:
+        open(log_file, "w").close()
+        return utils.return_response("Log file cleared successfully.")
+    except Exception as e:
+        return utils.return_error(f"Error clearing log file: {e}", 500)
 
 
 # Generic CRUD routes
-@api.route('/create/<string:model_name>', methods=["POST"])
+@api.route("/create/<string:model_name>", methods=["POST"])
 def create_record(model_name: str) -> Response:
     """
     Create a new record in the specified database table.
@@ -224,7 +227,7 @@ def create_record(model_name: str) -> Response:
     return utils.return_response(result)
 
 
-@api.route('/get_record/<string:model_name>', methods=["GET"])
+@api.route("/get_record/<string:model_name>", methods=["GET"])
 def get_record(model_name: str) -> Response:
     """
     Retrieve a record from the specified database table by its primary key.
@@ -285,7 +288,7 @@ def get_record(model_name: str) -> Response:
     return utils.return_response(sqlalchemy_utils.record_as_dict(result))
 
 
-@api.route('/get_records/<string:model_name>', methods=["GET"])
+@api.route("/get_records/<string:model_name>", methods=["GET"])
 def get_records(model_name: str) -> Response:
     """
     Retrieve all records from the specified database table.
@@ -340,7 +343,7 @@ def get_records(model_name: str) -> Response:
     return utils.return_response(records_dict)
 
 
-@api.route('/update/<string:model_name>', methods=["PUT"])
+@api.route("/update/<string:model_name>", methods=["PUT"])
 def update_record(model_name: str) -> Response:
     """
     Update an existing record in the specified database table.
@@ -405,7 +408,7 @@ def update_record(model_name: str) -> Response:
     return utils.return_response(result)
 
 
-@api.route('/delete/<string:model_name>', methods=["DELETE"])
+@api.route("/delete/<string:model_name>", methods=["DELETE"])
 def delete_record(model_name: str) -> Response:
     """
     Delete an existing record from the specified database table.
@@ -522,3 +525,27 @@ def get_table_schema(model_name):
     if not model_schema:
         return utils.return_error(f"No model found named {model_name}", 404)
     return utils.return_response(model_schema)
+
+
+@api.route("/schema/all", methods=["GET"])
+def get_all_db_models():
+    """
+    Get ALL the models in the database.
+
+    This endpoint returns the names of all SQLAlchemy models
+    in the database. Useful for dynamically generating forms
+    or data tables based on database models in the frontend.
+    ---
+    tags:
+      - Database
+    responses:
+      200:
+        description: List of all database models.
+        schema:
+          type: array
+          items:
+            type: string
+            example: "User"
+    """
+    all_model_schemas: list[dict] = sqlalchemy_utils.get_all_models_names()
+    return utils.return_response(all_model_schemas)

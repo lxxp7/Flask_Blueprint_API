@@ -1,4 +1,5 @@
 """Utils module containing all frequently used functions."""
+
 from typing import Any
 
 from flask import Response, current_app, jsonify
@@ -15,12 +16,10 @@ def return_error(err_message: str, status_code: int = 400) -> Response:
     Returns:
         Response: A Flask Response object containing the error message and status code
     """
-    return jsonify(
-        {"error": err_message}
-    ), status_code
+    return jsonify(err_message), status_code
 
 
-def return_response(data: Any, status_code: int = 200 ) -> Response:
+def return_response(data: Any, status_code: int = 200) -> Response:
     """
     Return a formatted success response with the provided data and status code.
 
@@ -30,9 +29,7 @@ def return_response(data: Any, status_code: int = 200 ) -> Response:
     Returns:
         Response: A Flask Response object containing the data and HTTP status code
     """
-    return jsonify(
-        {"data": data}
-    ), status_code
+    return jsonify(data), status_code
 
 
 def log_info(message: str):
@@ -80,4 +77,3 @@ def get_setting(key, **kwargs):
     if value and kwargs:
         return value.format(**kwargs)
     return value
-
